@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Search, Package, Leaf, Filter, ScanLine } from 'lucide-react';
+import { Search, Package, Leaf, Filter, ScanLine, Sparkles } from 'lucide-react';
 import { ProductType } from '@/shared/types';
 import Navigation from '@/react-app/components/Navigation';
 import { Link } from 'react-router';
@@ -129,6 +129,21 @@ export default function Products() {
                 </select>
               </div>
             </div>
+          </div>
+
+          {/* Green Box Banner */}
+          <div className="mb-6 bg-gradient-to-r from-emerald-600 to-teal-500 rounded-2xl p-6 text-white shadow-lg relative overflow-hidden">
+            <div className="relative z-10 flex justify-between items-center">
+              <div>
+                <h2 className="text-xl font-bold mb-1">Browse Eco-Friendly Products</h2>
+                <p className="text-emerald-50 text-sm opacity-90">Find the best sustainable options for your lifestyle</p>
+              </div>
+              <Sparkles className="w-8 h-8 text-emerald-200 animate-pulse" />
+            </div>
+
+            {/* Decorative circles */}
+            <div className="absolute -top-12 -right-12 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
+            <div className="absolute -bottom-12 -left-12 w-32 h-32 bg-emerald-400/20 rounded-full blur-2xl"></div>
           </div>
 
           {/* Search Bar */}

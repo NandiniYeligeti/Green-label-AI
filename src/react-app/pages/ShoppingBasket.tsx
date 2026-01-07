@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ShoppingBasket as BasketIcon, Trash2, Plus, Sparkles, AlertCircle, CheckCircle2, Scan } from 'lucide-react';
+import { ShoppingBasket as BasketIcon, Trash2, Plus, AlertCircle, CheckCircle2, Scan, Sparkles } from 'lucide-react';
 import Navigation from '@/react-app/components/Navigation';
 import BarcodeScanner from '@/react-app/components/BarcodeScanner';
 
@@ -77,10 +77,26 @@ export default function ShoppingBasket() {
             </div>
 
             <div className="max-w-2xl mx-auto px-4 py-6 space-y-6">
+
+                {/* Green Box Banner */}
+                <div className="bg-gradient-to-r from-emerald-600 to-teal-500 rounded-2xl p-6 text-white shadow-lg relative overflow-hidden mb-6">
+                    <div className="relative z-10 flex justify-between items-center">
+                        <div>
+                            <h2 className="text-xl font-bold mb-1">Your Eco-Basket</h2>
+                            <p className="text-emerald-50 text-sm opacity-90">Scan multiple items to see your total impact</p>
+                        </div>
+                        <BasketIcon className="w-8 h-8 text-emerald-200" />
+                    </div>
+
+                    {/* Decorative circles */}
+                    <div className="absolute -top-12 -right-12 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
+                    <div className="absolute -bottom-12 -left-12 w-32 h-32 bg-emerald-400/20 rounded-full blur-2xl"></div>
+                </div>
+
                 {/* Input Section */}
                 <div className="bg-white p-6 rounded-2xl shadow-sm border border-emerald-100">
                     <label className="block text-sm font-medium text-gray-700 mb-2">Add Product Barcodes</label>
-                    <div className="flex gap-2">
+                    <div className="flex flex-col md:flex-row gap-2">
                         <button
                             onClick={() => setShowScanner(true)}
                             className="bg-gray-900 text-white p-3 rounded-xl hover:bg-gray-800 transition-colors"
@@ -139,7 +155,7 @@ export default function ShoppingBasket() {
                 {/* Results Section */}
                 {basketResult && (
                     <div className="space-y-4 animate-in slide-in-from-bottom-4 duration-500">
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="bg-gradient-to-br from-emerald-500 to-teal-600 p-6 rounded-2xl text-white shadow-lg">
                                 <div className="flex items-center gap-2 mb-2 opacity-90">
                                     <AlertCircle className="w-5 h-5" />
