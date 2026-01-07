@@ -6,6 +6,8 @@ import ProductRecommendations from '@/react-app/components/ProductRecommendation
 import ScoreBreakdown from '@/react-app/components/ScoreBreakdown';
 import Navigation from '@/react-app/components/Navigation';
 
+import { API_BASE_URL } from "../../config";
+
 export default function Home() {
   const [showScanner, setShowScanner] = useState(false);
   const [manualBarcode, setManualBarcode] = useState('');
@@ -35,7 +37,7 @@ export default function Home() {
     setProduct(null);
 
     try {
-      const response = await fetch('http://localhost:3000/api/scan-product', {
+      const response = await fetch(`${API_BASE_URL}/api/scan-product`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ barcode: barcode.trim() }),

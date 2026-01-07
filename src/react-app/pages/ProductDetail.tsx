@@ -7,6 +7,8 @@ import ScoreBreakdown from '@/react-app/components/ScoreBreakdown';
 import Navigation from '@/react-app/components/Navigation';
 import { ProductType } from '@/shared/types';
 
+import { API_BASE_URL } from "../../config";
+
 export default function ProductDetail() {
   const { barcode } = useParams<{ barcode: string }>();
   const [product, setProduct] = useState<ProductType | null>(null);
@@ -22,7 +24,7 @@ export default function ProductDetail() {
   const fetchProduct = async (productBarcode: string) => {
     try {
       setLoading(true);
-      const response = await fetch(`http://localhost:3000/api/product/${productBarcode}`);
+      const response = await fetch(`${API_BASE_URL}/api/product/${productBarcode}`);
       const data = await response.json();
 
       if (data.success && data.product) {

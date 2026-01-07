@@ -4,6 +4,8 @@ import { ProductType } from '@/shared/types';
 import Navigation from '@/react-app/components/Navigation';
 import { Link } from 'react-router';
 
+import { API_BASE_URL } from "../../config";
+
 export default function Products() {
   const [products, setProducts] = useState<ProductType[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<ProductType[]>([]);
@@ -23,7 +25,7 @@ export default function Products() {
   const fetchProducts = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:3000/api/products');
+      const response = await fetch(`${API_BASE_URL}/api/products`);
       const data = await response.json();
 
       if (data.success) {

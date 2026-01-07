@@ -31,6 +31,8 @@ interface UserBadge {
     earned_at: string;
 }
 
+import { API_BASE_URL } from "../../config";
+
 export default function Impact() {
     const [stats, setStats] = useState<ImpactStats | null>(null);
     const [badges, setBadges] = useState<UserBadge[]>([]);
@@ -44,8 +46,8 @@ export default function Impact() {
         setLoading(true);
         try {
             const [statsRes, badgesRes] = await Promise.all([
-                fetch('http://localhost:3000/api/impact/stats'),
-                fetch('http://localhost:3000/api/badges')
+                fetch(`${API_BASE_URL}/api/impact/stats`),
+                fetch(`${API_BASE_URL}/api/badges`)
             ]);
 
             const statsData = await statsRes.json();
@@ -71,7 +73,7 @@ export default function Impact() {
                 progress: 0
             };
 
-            await fetch('http://localhost:3000/api/goals', {
+            await fetch(`${API_BASE_URL}/api/goals`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(goal)

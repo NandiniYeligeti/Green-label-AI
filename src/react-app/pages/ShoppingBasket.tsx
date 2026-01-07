@@ -17,6 +17,8 @@ interface BasketResult {
     items: BasketItem[];
 }
 
+import { API_BASE_URL } from "../../config";
+
 export default function ShoppingBasket() {
     const [barcodes, setBarcodes] = useState<string[]>([]);
     const [currentBarcode, setCurrentBarcode] = useState('');
@@ -46,7 +48,7 @@ export default function ShoppingBasket() {
 
         setLoading(true);
         try {
-            const response = await fetch('http://localhost:3000/api/basket', {
+            const response = await fetch(`${API_BASE_URL}/api/basket`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ barcodes }),
