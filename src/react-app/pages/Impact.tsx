@@ -32,6 +32,8 @@ interface UserBadge {
     id: number;
     badge: Badge;
     earned_at: string;
+    name?: string;
+    description?: string;
 }
 
 import { API_BASE_URL } from "../../config";

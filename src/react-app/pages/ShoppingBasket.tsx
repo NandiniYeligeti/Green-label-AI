@@ -6,6 +6,8 @@ import BarcodeScanner from '@/react-app/components/BarcodeScanner';
 interface BasketItem {
     barcode: string;
     product_name: string;
+    name?: string;
+    productName?: string;
     carbon: number;
     health_score: number;
     image_url?: string;
