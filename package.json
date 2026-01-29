@@ -5,6 +5,7 @@
   "type": "module",
   "dependencies": {
     "@zxing/library": "^0.21.3",
+    "framer-motion": "^12.29.2",
     "lucide-react": "^0.510.0",
     "react": "19.0.0",
     "react-dom": "19.0.0",

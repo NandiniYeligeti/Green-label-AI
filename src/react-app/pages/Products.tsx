@@ -13,6 +13,8 @@ export default function Products() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [sortBy, setSortBy] = useState<'newest' | 'score' | 'name'>('newest');
+  const [headerVisible, setHeaderVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
 
   useEffect(() => {
     fetchProducts();
@@ -21,6 +23,24 @@ export default function Products() {
   useEffect(() => {
     filterAndSortProducts();
   }, [products, searchTerm, sortBy]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      
+      // Hide header when scrolling down, show when scrolling up
+      if (currentScrollY > lastScrollY && currentScrollY > 100) {
+        setHeaderVisible(false);
+      } else {
+        setHeaderVisible(true);
+      }
+      
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [lastScrollY]);
 
   const fetchProducts = async () => {
     try {
@@ -100,8 +120,14 @@ export default function Products() {
 
   return (
     <div className="min-h-screen pb-24 md:pt-20">
-      {/* Header */}
-      <div className="glass-panel sticky top-0 md:top-20 z-40 border-b border-white/50 backdrop-blur-xl">
+      {/* Scrollable Header */}
+      <div 
+        className="glass-panel border-b border-white/50 backdrop-blur-xl transition-all duration-300 ease-in-out overflow-hidden"
+        style={{
+          maxHeight: headerVisible ? '500px' : '0px',
+          opacity: headerVisible ? 1 : 0,
+        }}
+      >
         <div className="max-w-7xl mx-auto px-4 py-4 md:py-6">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
             <div className="flex items-center gap-3">
@@ -145,8 +171,12 @@ export default function Products() {
             <div className="absolute -top-12 -right-12 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
             <div className="absolute -bottom-12 -left-12 w-32 h-32 bg-emerald-400/20 rounded-full blur-2xl"></div>
           </div>
+        </div>
+      </div>
 
-          {/* Search Bar */}
+      {/* Sticky Search Bar */}
+      <div className="sticky top-0 md:top-20 z-40 glass-panel border-b border-white/50 backdrop-blur-xl">
+        <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="relative">
             <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
             <input
@@ -154,7 +184,7 @@ export default function Products() {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Search database..."
-              className="w-full pl-12 pr-4 py-3 bg-white/80 border border-gray-200 rounded-xl focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 outline-none transition-all shadow-sm"
+              className="w-full pl-12 pr-4 py-3 bg-white text-gray-900 placeholder-gray-400 border border-gray-200 rounded-xl focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 outline-none transition-all shadow-sm"
             />
           </div>
         </div>

@@ -24,11 +24,47 @@ export default function ProductDetail() {
   const fetchProduct = async (productBarcode: string) => {
     try {
       setLoading(true);
+      // Try Open Food Facts first
+      try {
+        const offRes = await fetch(`https://world.openfoodfacts.org/api/v0/product/${productBarcode}.json`);
+        if (offRes.ok) {
+          const offJson = await offRes.json();
+          if (offJson && offJson.status === 1 && offJson.product) {
+            const p = offJson.product;
+            const mapped = {
+              id: p._id || null,
+              name: p.product_name || p.generic_name || `Product ${productBarcode}`,
+              barcode: p.code || productBarcode,
+              green_score: p.ecoscore_score ?? 50,
+              image_url: p.image_url || p.image_small_url || '',
+              brand: p.brands || '',
+              raw_data: JSON.stringify(p),
+            } as any;
+            setProduct(mapped as ProductType);
+            return;
+          }
+        }
+      } catch (e) {
+        // ignore openfoodfacts errors and fallback to backend
+      }
+
+      // Fallback to backend
       const response = await fetch(`${API_BASE_URL}/api/product/${productBarcode}`);
       const data = await response.json();
 
       if (data.success && data.product) {
-        setProduct(data.product);
+        // Map backend product shape to frontend ProductType as needed
+        const p = data.product;
+        const mapped = {
+          id: p.id || p._id || null,
+          name: p.name || p.Name || `Product ${productBarcode}`,
+          barcode: p.barcode || productBarcode,
+          green_score: p.ecoScore ?? p.EcoScore ?? 50,
+          image_url: p.image_url || '',
+          brand: p.brand || '',
+          raw_data: JSON.stringify(p),
+        } as any;
+        setProduct(mapped as ProductType);
       } else {
         setError('Product not found');
       }

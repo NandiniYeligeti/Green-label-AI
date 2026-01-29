@@ -6,6 +6,9 @@ interface ImpactStats {
     total_carbon_saved: number;
     weekly_report: string;
     active_goals: UserGoal[];
+    total_baskets?: number;
+    total_score?: number;
+    average_score?: number | string;
 }
 
 interface UserGoal {
@@ -84,34 +87,50 @@ export default function Impact() {
         }
     };
 
-    if (loading) return <div className="min-h-screen flex items-center justify-center bg-gray-50"><div className="animate-spin text-emerald-600">Loading...</div></div>;
+    if (loading) return <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--page-bg)' }}><div className="animate-spin" style={{ color: 'var(--cream)' }}>Loading...</div></div>;
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50 pb-20">
+        <div className="min-h-screen pb-20" style={{ background: 'var(--page-bg)' }}>
             {/* Header */}
-            <div className="bg-white shadow-sm border-b border-gray-200">
+            <div className="border-b" style={{ background: 'rgba(0,0,0,0.2)', borderColor: 'rgba(255,255,255,0.05)' }}>
                 <div className="max-w-2xl mx-auto px-4 py-6">
                     <div className="flex items-center gap-3 mb-1">
-                        <User className="w-8 h-8 text-emerald-600" />
-                        <h1 className="text-2xl font-bold text-gray-900">Your Impact</h1>
+                        <User className="w-8 h-8" style={{ color: 'var(--cream)' }} />
+                        <h1 className="text-2xl font-bold" style={{ color: 'var(--cream)' }}>Your Impact</h1>
                     </div>
-                    <p className="text-gray-600">Track your journey to a greener lifestyle</p>
+                    <p className="text-gray-400">Track your journey to a greener lifestyle</p>
                 </div>
             </div>
 
             <div className="max-w-2xl mx-auto px-4 py-6 space-y-6">
                 {/* Stats Card */}
                 {stats && (
-                    <div className="bg-gradient-to-r from-emerald-600 to-teal-700 rounded-3xl p-6 text-white shadow-xl shadow-emerald-200">
+                    <div className="bg-gradient-to-r from-emerald-800 to-teal-900 rounded-3xl p-6 text-white shadow-xl shadow-emerald-200">
                         <div className="flex items-start justify-between mb-6">
                             <div>
                                 <h2 className="text-emerald-100 font-medium mb-1">Total Carbon Saved</h2>
-                                <div className="text-4xl font-bold">{stats.total_carbon_saved.toFixed(1)} <span className="text-xl font-normal opacity-80">kg</span></div>
+                                <div className="text-4xl font-bold">{Number(stats.total_carbon_saved || 0).toFixed(1)} <span className="text-xl font-normal opacity-80">kg</span></div>
                             </div>
                             <div className="bg-white/10 p-3 rounded-xl backdrop-blur-sm">
                                 <Leaf className="w-8 h-8 text-emerald-100" />
                             </div>
                         </div>
+
+                        <div className="grid grid-cols-3 gap-3 mb-4">
+                            <div className="bg-white/10 rounded-xl p-3 text-center">
+                                <div className="text-xs text-emerald-100">Baskets Saved</div>
+                                <div className="text-2xl font-bold">{stats.total_baskets ?? 0}</div>
+                            </div>
+                            <div className="bg-white/10 rounded-xl p-3 text-center">
+                                <div className="text-xs text-emerald-100">Average Score</div>
+                                <div className="text-2xl font-bold">{typeof stats.average_score === 'string' ? stats.average_score : (Number(stats.average_score || 0).toFixed(1))}</div>
+                            </div>
+                            <div className="bg-white/10 rounded-xl p-3 text-center">
+                                <div className="text-xs text-emerald-100">Total Score</div>
+                                <div className="text-2xl font-bold">{Number(stats.total_score || 0).toFixed(0)}</div>
+                            </div>
+                        </div>
+
                         <div className="bg-white/10 rounded-xl p-4 backdrop-blur-md border border-white/10">
                             <div className="flex gap-2 items-start">
                                 <TrendingUp className="w-5 h-5 text-emerald-200 mt-0.5" />
@@ -174,15 +193,15 @@ export default function Impact() {
                     </h2>
 
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                        {badges && badges.length > 0 ? badges.map(userBadge => (
-                            <div key={userBadge.id} className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm text-center hover:shadow-md transition-shadow">
-                                <div className="w-12 h-12 bg-amber-50 rounded-full flex items-center justify-center mx-auto mb-3">
-                                    <Award className="w-6 h-6 text-amber-500" />{/* Dynamic icon logic could go here */}
+                        {badges && badges.length > 0 ? badges.map((userBadge, idx) => (
+                                <div key={userBadge?.id ?? idx} className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm text-center hover:shadow-md transition-shadow">
+                                    <div className="w-12 h-12 bg-amber-50 rounded-full flex items-center justify-center mx-auto mb-3">
+                                        <Award className="w-6 h-6 text-amber-500" />{/* Dynamic icon logic could go here */}
+                                    </div>
+                                    <h3 className="font-semibold text-gray-900 text-sm mb-1">{userBadge?.badge?.name ?? userBadge?.name ?? 'Badge'}</h3>
+                                    <p className="text-xs text-gray-500">{userBadge?.badge?.description ?? userBadge?.description ?? ''}</p>
                                 </div>
-                                <h3 className="font-semibold text-gray-900 text-sm mb-1">{userBadge.badge.name}</h3>
-                                <p className="text-xs text-gray-500">{userBadge.badge.description}</p>
-                            </div>
-                        )) : (
+                            )) : (
                             <div className="col-span-full text-center py-8 bg-gray-50 rounded-xl">
                                 <p className="text-gray-500 text-sm">Start scanning to earn badges!</p>
                             </div>

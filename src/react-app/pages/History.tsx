@@ -23,10 +23,13 @@ export default function History() {
   const fetchHistory = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:3000/api/search-history'); // ✅ updated
+      const response = await fetch(`${API_BASE_URL}/history`);
       const data = await response.json();
 
-      if (data.success) {
+      // backend returns { success: true, history: [...] }
+      if (Array.isArray(data)) {
+        setHistory(data || []);
+      } else if (data && data.success) {
         setHistory(data.history || []);
       } else {
         setError('Failed to load search history');
@@ -46,13 +49,13 @@ export default function History() {
 
       // ... existing imports
 
-      const response = await fetch(`${API_BASE_URL}/api/search-history`, { // ✅ updated
+      const response = await fetch(`${API_BASE_URL}/history/clear`, {
         method: 'DELETE',
       });
 
       const data = await response.json();
 
-      if (data.success) {
+      if (data && data.success) {
         setHistory([]);
       } else {
         setError('Failed to clear history');
@@ -79,11 +82,11 @@ export default function History() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50 pb-20">
+      <div className="min-h-screen pb-20" style={{ background: 'var(--page-bg)' }}>
         <div className="flex items-center justify-center min-h-screen">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Loading search history...</p>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-400 mx-auto mb-4"></div>
+            <p style={{ color: 'var(--muted)' }}>Loading search history...</p>
           </div>
         </div>
         <Navigation />
@@ -92,16 +95,16 @@ export default function History() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50 pb-20">
+    <div className="min-h-screen pb-20" style={{ background: 'var(--page-bg)' }}>
       {/* Header */}
-      <div className="bg-white shadow-sm border-b border-gray-200">
+      <div className="border-b" style={{ background: 'rgba(0,0,0,0.2)', borderColor: 'rgba(255,255,255,0.05)' }}>
         <div className="max-w-2xl mx-auto px-4 py-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
-              <HistoryIcon className="w-8 h-8 text-emerald-600" />
+              <HistoryIcon className="w-8 h-8" style={{ color: 'var(--cream)' }} />
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">Search History</h1>
-                <p className="text-sm text-gray-600">{history.length} recent scans</p>
+                <h1 className="text-2xl font-bold" style={{ color: 'var(--cream)' }}>Search History</h1>
+                <p className="text-sm text-gray-400">{history.length} recent scans</p>
               </div>
             </div>
 
@@ -143,7 +146,7 @@ export default function History() {
           <div className="space-y-3">
             {history.map((item) => (
               <Link
-                key={item.id}
+                key={`${item.barcode}-${item.searched_at}`}
                 to={`/product/${item.barcode}`}
                 className="block bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow"
               >

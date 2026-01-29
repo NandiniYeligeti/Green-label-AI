@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Lightbulb, Star, ShoppingBag, Leaf, Award } from 'lucide-react';
+import { API_BASE_URL } from "../../config";
 
 interface Recommendation {
   name: string;
@@ -58,7 +59,7 @@ export default function ProductRecommendations({ barcode, currentScore }: Produc
   const fetchRecommendations = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`http://localhost:5000/api/product/${barcode}/recommendations`);
+      const response = await fetch(`${API_BASE_URL}/api/product/${barcode}/recommendations`);
       const data = await response.json();
 
       if (data.success) {
@@ -78,7 +79,7 @@ export default function ProductRecommendations({ barcode, currentScore }: Produc
     try {
       setRecipesLoading(true);
       setRecipes(null);
-      const response = await fetch(`http://localhost:5000/api/product/${barcode}/recipes?count=2`);
+      const response = await fetch(`${API_BASE_URL}/api/product/${barcode}/recipes?count=2`);
       const data = await response.json();
 
       if (data.success) {
@@ -95,7 +96,7 @@ export default function ProductRecommendations({ barcode, currentScore }: Produc
     try {
       setMacrosLoading(true);
       setMacros(null);
-      const response = await fetch(`http://localhost:5000/api/product/${barcode}/macros`);
+      const response = await fetch(`${API_BASE_URL}/api/product/${barcode}/macros`);
       const data = await response.json();
 
       if (data.success) {
