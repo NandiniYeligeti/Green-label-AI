@@ -25,20 +25,28 @@ export default function Products() {
   }, [products, searchTerm, sortBy]);
 
   useEffect(() => {
+    let ticking = false;
+
     const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      
-      // Hide header when scrolling down, show when scrolling up
-      if (currentScrollY > lastScrollY && currentScrollY > 100) {
-        setHeaderVisible(false);
-      } else {
-        setHeaderVisible(true);
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          const currentScrollY = window.scrollY;
+          
+          // Hide header when scrolling down, show when scrolling up
+          if (currentScrollY > lastScrollY && currentScrollY > 100) {
+            setHeaderVisible(false);
+          } else {
+            setHeaderVisible(true);
+          }
+          
+          setLastScrollY(currentScrollY);
+          ticking = false;
+        });
+        ticking = true;
       }
-      
-      setLastScrollY(currentScrollY);
     };
 
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, [lastScrollY]);
 
@@ -122,10 +130,9 @@ export default function Products() {
     <div className="min-h-screen pb-24 md:pt-20">
       {/* Scrollable Header */}
       <div 
-        className="glass-panel border-b border-white/50 backdrop-blur-xl transition-all duration-300 ease-in-out overflow-hidden"
+        className="glass-panel border-b border-white/50 backdrop-blur-xl transition-transform duration-300 ease-in-out"
         style={{
-          maxHeight: headerVisible ? '500px' : '0px',
-          opacity: headerVisible ? 1 : 0,
+          transform: headerVisible ? 'translateY(0)' : 'translateY(-100%)',
         }}
       >
         <div className="max-w-7xl mx-auto px-4 py-4 md:py-6">
@@ -175,7 +182,7 @@ export default function Products() {
       </div>
 
       {/* Sticky Search Bar */}
-      <div className="sticky top-0 md:top-20 z-40 glass-panel border-b border-white/50 backdrop-blur-xl">
+      <div className="sticky top-0 z-30 glass-panel border-b border-white/50 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="relative">
             <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -191,7 +198,7 @@ export default function Products() {
       </div>
 
       {/* Content */}
-      <div className="max-w-7xl mx-auto px-4 py-6">
+      <div className="max-w-7xl mx-auto px-4 py-6 pt-24">
         {error && (
           <div className="bg-red-50 border border-red-200 rounded-2xl p-4 mb-8 text-center text-red-700">
             {error}

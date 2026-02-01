@@ -185,7 +185,7 @@ export default function ProductDetail() {
 
         <div className="flex flex-col md:flex-row gap-8 items-start">
           {/* Left Column - Product Card */}
-          <div className="w-full md:w-1/3 sticky top-24 animate-slide-up">
+          <div className="w-full md:w-1/3 md:sticky md:top-24 animate-slide-up">
             <ProductCard product={product} onShare={handleShare} />
           </div>
 
