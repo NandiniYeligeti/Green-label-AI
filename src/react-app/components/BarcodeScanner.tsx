@@ -38,7 +38,7 @@ export default function BarcodeScanner({ onScan, onClose, isOpen }: BarcodeScann
       const codeReader = new BrowserMultiFormatReader();
       codeReaderRef.current = codeReader;
 
-      if (!window.isSecureContext) {
+      if (!window.isSecureContext && !import.meta.env.DEV) {
         throw new Error('InsecureContext');
       }
 
@@ -47,12 +47,16 @@ export default function BarcodeScanner({ onScan, onClose, isOpen }: BarcodeScann
         throw new Error('NoDevicesFound');
       }
 
-      // Try to find back camera first (for mobile)
+      // Try to find back camera first (for mobile), fallback to any camera
       const backCamera = videoInputDevices.find(device =>
         device.label.toLowerCase().includes('back') ||
-        device.label.toLowerCase().includes('rear')
+        device.label.toLowerCase().includes('rear') ||
+        device.label.toLowerCase().includes('environment')
       );
       const selectedDevice = backCamera || videoInputDevices[0];
+
+      console.log('Available cameras:', videoInputDevices.map(d => ({ id: d.deviceId, label: d.label })));
+      console.log('Selected camera:', selectedDevice.label);
 
       await codeReader.decodeFromVideoDevice(
         selectedDevice.deviceId,
@@ -73,13 +77,30 @@ export default function BarcodeScanner({ onScan, onClose, isOpen }: BarcodeScann
       console.error('Scanner error:', err);
 
       if (err.message === 'InsecureContext') {
-        setError('Camera access requires a secure connection (HTTPS).');
+        setError('Camera access requires a secure connection (HTTPS). In development, use the "Simulate Scan" button below.');
       } else if (err.message === 'NoDevicesFound' || err.name === 'NotFoundError') {
         setError('No camera found on this device. Please ensure a camera is connected.');
       } else if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
-        setError('Camera access denied. Please allow camera permissions in your browser settings.');
-      } else if (err.name === 'NotReadableError' || err.name === 'TrackStartError') {
-        setError('Camera is already in use by another application.');
+        setError('Camera access denied. Please allow camera permissions in your browser settings and refresh the page.');
+      } else if (err.name === 'NotReadableError' || err.name === 'TrackStartError' || err.name === 'AbortError') {
+        setError('Camera is already in use by another application or device is busy. Please close other camera apps and try again.');
+      } else if (err.name === 'OverconstrainedError' || err.name === 'ConstraintNotSatisfiedError') {
+        setError('Camera constraints not satisfied. Trying default camera...');
+        // Fallback to default constraints
+        try {
+          const fallbackCodeReader = new BrowserMultiFormatReader();
+          await fallbackCodeReader.decodeFromVideoDevice(null, videoRef.current, (result: any, _error: any) => {
+            if (result) {
+              const barcodeText = result.getText();
+              console.log('Scanned barcode:', barcodeText);
+              onScan(barcodeText);
+              fallbackCodeReader.reset();
+              stopScanning();
+            }
+          });
+        } catch (fallbackErr) {
+          setError('Failed to access any camera. Please check your device and permissions.');
+        }
       } else {
         setError('Failed to access camera. Please check permissions and connection.');
       }
@@ -148,9 +169,25 @@ export default function BarcodeScanner({ onScan, onClose, isOpen }: BarcodeScann
               playsInline
               muted
             />
-            <p className="text-sm text-gray-600 text-center">
-              Position the barcode within the camera view
-            </p>
+            <div className="flex flex-col gap-2">
+              <p className="text-sm text-gray-600 text-center">
+                Position the barcode within the camera view
+              </p>
+              {import.meta.env.DEV && (
+                <button
+                  onClick={() => {
+                    const mockBarcodes = ['3017620422003', '7613035303493', '5449000000996'];
+                    const randomBarcode = mockBarcodes[Math.floor(Math.random() * mockBarcodes.length)];
+                    console.log('Simulating scan of barcode:', randomBarcode);
+                    onScan(randomBarcode);
+                    onClose();
+                  }}
+                  className="text-xs text-gray-500 border border-gray-300 px-3 py-1 rounded hover:bg-gray-50 transition-colors"
+                >
+                  Simulate Scan (Dev)
+                </button>
+              )}
+            </div>
           </div>
         )}
       </div>
